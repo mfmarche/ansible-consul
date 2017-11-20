@@ -59,6 +59,11 @@
     "rpc": "127.0.0.1"
   },
 {% endif %}
+{% if consul_bind_address is defined %}
+  "addresses" : {
+    "http": "{{ consul_bind_address }}"
+  },
+{% endif %}
 {% if consul_dynamic_bind == false and consul_bind_address is defined and consul_bind_address is not none %}
   "bind_addr": "{{ consul_bind_address }}",
 {% endif %}
@@ -102,7 +107,9 @@
     "dns": {{ consul_port_dns }},
     "http": {{ consul_port_http }},
     "https": {{ consul_port_https }},
+  {% if consul_version | version_compare('1.0.0', '<') %}
     "rpc": {{ consul_port_rpc }},
+  {% endif %}
     "serf_lan": {{ consul_port_serf_lan }},
     "serf_wan": {{ consul_port_serf_wan }},
     "server": {{ consul_port_server }}
@@ -149,7 +156,7 @@
     "disable_hostname": {{ "true" if consul_telemetry_disable_hostname else "false" }}
   },
 {% endif %}
-{% if consul_cors_support is defined %}
+{% if consul_cors_support is defined and consul_version | version_compare('1.0.0', '<') %}
   "http_api_response_headers": {
         "Access-Control-Allow-Origin": "*"
   },
